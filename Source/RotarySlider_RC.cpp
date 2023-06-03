@@ -38,8 +38,8 @@ void LookAndFeel::drawRotarySlider(
     juce::Rectangle<float> r;
     r.setLeft(center.getX() - 5);
     r.setRight(center.getX() + 5);
-    r.setTop(bounds.getY()-50);
-    r.setBottom(center.getY());
+    r.setTop(bounds.getY());
+    r.setBottom(center.getY()-50);
 
     p.addRectangle(r);
 
@@ -89,7 +89,17 @@ void RotarySlider::paint(juce::Graphics& graphics)
 
 juce::Rectangle<int> RotarySlider::GetSliderBounds() const
 {
-    return getLocalBounds();
+    auto bounds = getLocalBounds();
+
+    auto size = juce::jmin(bounds.getWidth(), bounds.getHeight());
+
+    size -= GetTextHeight() * 2;
+    juce::Rectangle<int> r;
+    r.setSize(size, size);
+    r.setCentre(bounds.getCentreX(), 0);
+    r.setY(2);
+
+    return r;
 }
 
 juce::String RotarySlider::GetDisplayString() const
