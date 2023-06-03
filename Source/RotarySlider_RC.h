@@ -24,7 +24,7 @@ struct LookAndFeel : juce::LookAndFeel_V4
 class RotarySlider : public juce::Slider
 {
 public:
-    RotarySlider(juce::RangedAudioParameter& parameter, const juce::String& unitSuffix);
+    RotarySlider(juce::RangedAudioParameter& parameter, const juce::String& name, const juce::String& unitSuffix);
     ~RotarySlider();
 
     //override
@@ -32,11 +32,13 @@ public:
 
     //My functions
     juce::Rectangle<int> GetSliderBounds() const;
-    int GetTextHeight() const { return 14; }
+    int GetTextHeight() const { return 18; }
     juce::String GetDisplayString() const;
+    juce::String GetName() const;
 private:
     LookAndFeel lnf;
 
     juce::RangedAudioParameter* param;
     juce::String suffix;
+    juce::String name;
 };

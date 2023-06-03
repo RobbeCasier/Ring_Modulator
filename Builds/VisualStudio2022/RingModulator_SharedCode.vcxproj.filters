@@ -601,6 +601,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\WaveDisplay.cpp">
+      <Filter>RingModulator\Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\PluginProcessor.cpp">
       <Filter>RingModulator\Source</Filter>
     </ClCompile>
@@ -608,6 +611,9 @@
       <Filter>RingModulator\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\RotarySlider_RC.cpp">
+      <Filter>RingModulator\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\ComboBox_RC.cpp">
       <Filter>RingModulator\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\SFX\Extra\JUCE\modules\juce_audio_basics\buffers\juce_AudioChannelSet.cpp">
@@ -3027,6 +3033,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\WaveDisplay.h">
+      <Filter>RingModulator\Source</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\PluginProcessor.h">
       <Filter>RingModulator\Source</Filter>
     </ClInclude>
@@ -3034,6 +3043,9 @@
       <Filter>RingModulator\Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\RotarySlider_RC.h">
+      <Filter>RingModulator\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\ComboBox_RC.h">
       <Filter>RingModulator\Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\SFX\Extra\JUCE\modules\juce_audio_basics\audio_play_head\juce_AudioPlayHead.h">

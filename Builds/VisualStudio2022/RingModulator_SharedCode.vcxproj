@@ -139,9 +139,11 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\WaveDisplay.cpp"/>
     <ClCompile Include="..\..\Source\PluginProcessor.cpp"/>
     <ClCompile Include="..\..\Source\PluginEditor.cpp"/>
     <ClCompile Include="..\..\Source\RotarySlider_RC.cpp"/>
+    <ClCompile Include="..\..\Source\ComboBox_RC.cpp"/>
     <ClCompile Include="..\..\..\..\..\SFX\Extra\JUCE\modules\juce_audio_basics\buffers\juce_AudioChannelSet.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
@@ -2402,9 +2404,11 @@
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_gui_extra.cpp"/>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\WaveDisplay.h"/>
     <ClInclude Include="..\..\Source\PluginProcessor.h"/>
     <ClInclude Include="..\..\Source\PluginEditor.h"/>
     <ClInclude Include="..\..\Source\RotarySlider_RC.h"/>
+    <ClInclude Include="..\..\Source\ComboBox_RC.h"/>
     <ClInclude Include="..\..\..\..\..\SFX\Extra\JUCE\modules\juce_audio_basics\audio_play_head\juce_AudioPlayHead.h"/>
     <ClInclude Include="..\..\..\..\..\SFX\Extra\JUCE\modules\juce_audio_basics\buffers\juce_AudioChannelSet.h"/>
     <ClInclude Include="..\..\..\..\..\SFX\Extra\JUCE\modules\juce_audio_basics\buffers\juce_AudioDataConverters.h"/>

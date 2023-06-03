@@ -11,6 +11,7 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 #include "RotarySlider_RC.h"
+#include "ComboBox_RC.h"
 
 //==============================================================================
 /**
@@ -34,15 +35,20 @@ private:
                         depthSlider,
                         mixSlider;
 
-    using APVTS = juce::AudioProcessorValueTreeState;
-    using Attachment = APVTS::SliderAttachment;
+    CustomComboBox waveSelector;
 
-    Attachment frequencySliderAttachment,
+    using APVTS = juce::AudioProcessorValueTreeState;
+    using SAttachment = APVTS::SliderAttachment;
+
+    SAttachment frequencySliderAttachment,
                 depthSliderAttachment,
                 mixSliderAttachment;
 
-    juce::Label frequencyLabel{ "Frequency" };
-    juce::Label depthLabel{ "Depth" };
-    juce::Label mixLabel{ "Mix" };
+    using CAttachment = APVTS::ComboBoxAttachment;
+
+    CAttachment waveSelectorAttachment;
+
+    juce::Rectangle<int> waveArea;
+    juce::Rectangle<int> parameterArea;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RingModulatorAudioProcessorEditor)
 };

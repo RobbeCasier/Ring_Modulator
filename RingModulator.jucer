@@ -4,6 +4,8 @@
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1">
   <MAINGROUP id="L2okSv" name="RingModulator">
     <GROUP id="{A420E651-3168-2068-7F00-C8A28FFFF2F4}" name="Source">
+      <FILE id="UDpQnI" name="WaveDisplay.cpp" compile="1" resource="0" file="Source/WaveDisplay.cpp"/>
+      <FILE id="s47eIO" name="WaveDisplay.h" compile="0" resource="0" file="Source/WaveDisplay.h"/>
       <FILE id="u1Bte8" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="ZKVzuJ" name="PluginProcessor.h" compile="0" resource="0"
@@ -15,6 +17,8 @@
             file="Source/RotarySlider_RC.h"/>
       <FILE id="uNJ3wf" name="RotarySlider_RC.cpp" compile="1" resource="0"
             file="Source/RotarySlider_RC.cpp"/>
+      <FILE id="NzDlXj" name="ComboBox_RC.cpp" compile="1" resource="0" file="Source/ComboBox_RC.cpp"/>
+      <FILE id="YitggU" name="ComboBox_RC.h" compile="0" resource="0" file="Source/ComboBox_RC.h"/>
     </GROUP>
   </MAINGROUP>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>

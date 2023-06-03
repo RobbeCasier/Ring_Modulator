@@ -19,7 +19,7 @@ void LookAndFeel::drawRotarySlider(
     float sliderPosProportional, 
     float rotaryStartAngle, 
     float rotaryEndAngle, 
-    juce::Slider&)
+    juce::Slider& slider)
 {
     auto bounds = juce::Rectangle<float>(x, y, width, height);
 
@@ -29,34 +29,55 @@ void LookAndFeel::drawRotarySlider(
     graphics.setColour(juce::Colour(200u, 0u, 0u));
     graphics.drawEllipse(bounds, 1.f);
 
-    //draw arrow knob
     graphics.setColour(juce::Colour(20u, 20u, 20u));
-    auto center = bounds.getCentre();
+    if (auto* rs = dynamic_cast<RotarySlider*>(&slider))
+    {
+        auto center = bounds.getCentre();
 
-    juce::Path p;
+        //draw arrow knob
+        juce::Path p;
 
-    juce::Rectangle<float> r;
-    r.setLeft(center.getX() - 5);
-    r.setRight(center.getX() + 5);
-    r.setTop(bounds.getY());
-    r.setBottom(center.getY()-50);
+        juce::Rectangle<float> r;
+        r.setLeft(center.getX() - 5);
+        r.setRight(center.getX() + 5);
+        r.setTop(bounds.getY());
+        r.setBottom(center.getY()- rs->GetTextHeight() * 3);
+        
+        p.addRoundedRectangle(r, 2.f);
 
-    p.addRectangle(r);
+        jassert(rotaryStartAngle < rotaryEndAngle);
 
-    jassert(rotaryStartAngle < rotaryEndAngle);
+        auto sliderAngleInRad = juce::jmap(sliderPosProportional, 0.f, 1.f, rotaryStartAngle, rotaryEndAngle);
 
-    auto sliderAngleInRad = juce::jmap(sliderPosProportional, 0.f, 1.f, rotaryStartAngle, rotaryEndAngle);
+        p.applyTransform(juce::AffineTransform().rotated(sliderAngleInRad, center.getX(), center.getY()));
 
-    p.applyTransform(juce::AffineTransform().rotated(sliderAngleInRad, center.getX(), center.getY()));
+        graphics.fillPath(p);
 
-    graphics.fillPath(p);
+        //Draw Box for Text
+        graphics.setFont(rs->GetTextHeight());
+        auto text = rs->GetDisplayString();
+        auto strWidth = graphics.getCurrentFont().getStringWidth(text);
+
+        r.setSize(80, rs->GetTextHeight() + 4);
+        r.setCentre(bounds.getCentre());
+
+        graphics.setColour(juce::Colour(100u, 0u, 0u));
+        graphics.fillRect(r);
+
+        graphics.setColour(juce::Colours::whitesmoke);
+        graphics.drawFittedText(text, r.toNearestInt(), juce::Justification::centred, 1);
+    }
+
+
+
 }
 
 //==============================================================================
-RotarySlider::RotarySlider(juce::RangedAudioParameter& parameter, const juce::String& unitSuffix):
+RotarySlider::RotarySlider(juce::RangedAudioParameter& parameter, const juce::String& name, const juce::String& unitSuffix):
     juce::Slider(juce::Slider::SliderStyle::RotaryVerticalDrag, juce::Slider::TextEntryBoxPosition::NoTextBox),
     param(&parameter),
-    suffix(unitSuffix)
+    suffix(unitSuffix),
+    name(name)
 {
     setLookAndFeel(&lnf);
 }
@@ -85,6 +106,17 @@ void RotarySlider::paint(juce::Graphics& graphics)
         startAng, 
         endAng, 
         *this);
+
+    //Draw Label
+    graphics.setColour(juce::Colours::whitesmoke);
+    graphics.setFont(GetTextHeight());
+
+    juce::Rectangle<float> r;
+    r.setSize(graphics.getCurrentFont().getStringWidth(name), GetTextHeight());
+    auto bounds = getLocalBounds();
+    r.setCentre(bounds.getCentreX(), GetTextHeight());
+
+    graphics.drawFittedText(name, r.toNearestInt(), juce::Justification::centred, 1);
 }
 
 juce::Rectangle<int> RotarySlider::GetSliderBounds() const
@@ -93,17 +125,42 @@ juce::Rectangle<int> RotarySlider::GetSliderBounds() const
 
     auto size = juce::jmin(bounds.getWidth(), bounds.getHeight());
 
-    size -= GetTextHeight() * 2;
+    size -= GetTextHeight() * 3;
     juce::Rectangle<int> r;
     r.setSize(size, size);
     r.setCentre(bounds.getCentreX(), 0);
-    r.setY(2);
+    r.setY(GetTextHeight() * 2);
 
     return r;
 }
 
 juce::String RotarySlider::GetDisplayString() const
 {
-    return juce::String();
+    juce::String str;
+
+    if (auto* floatParam = dynamic_cast<juce::AudioParameterFloat*>(param))
+    {
+        float val = getValue();
+
+        str = juce::String(val, 1);
+    }
+
+    if (auto* intParam = dynamic_cast<juce::AudioParameterInt*>(param))
+    {
+        float val = getValue();
+        str = juce::String(val,0);
+    }
+
+    if (suffix.isNotEmpty())
+    {
+        str << suffix;
+    }
+
+    return str;
+}
+
+juce::String RotarySlider::GetName() const
+{
+    return name;
 }
 

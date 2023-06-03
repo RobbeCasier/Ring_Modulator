@@ -158,7 +158,7 @@ void RingModulatorAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
     for (int i = 0; i < buffer.getNumSamples(); ++i)
     {
         // Calculate the modulation signal
-        double modulationSignal = std::sin(2.0 * juce::MathConstants<double>::pi * phase);
+        double modulationSignal = GetModulationSignal(settings.waveType, phase);
 
         for (int channel = 0; channel < totalNumOutputChannels; ++channel)
         {
@@ -175,8 +175,8 @@ void RingModulatorAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
         // Update the phase for the next sample
         double phaseIncrement = settings.frequency / sampleRate;
         phase += phaseIncrement;
-        if (phase >= 1.0)
-            phase -= 1.0;
+        if (phase >= juce::MathConstants<float>::twoPi)
+            phase -= juce::MathConstants<float>::twoPi;
     }
 }
 
@@ -219,7 +219,7 @@ Settings GetSettings(juce::AudioProcessorValueTreeState& apvts)
     settings.frequency = apvts.getRawParameterValue("Frequency")->load();
     settings.depth = apvts.getRawParameterValue("Depth")->load() / 100.f;
     settings.mix = apvts.getRawParameterValue("Mix")->load() / 100.f;
-
+    settings.waveType = (WaveType)apvts.getRawParameterValue("Modulation Wave")->load();
     return settings;
 }
 
@@ -230,7 +230,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout RingModulatorAudioProcessor:
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         "Frequency", 
         "Frequency", 
-        juce::NormalisableRange<float>(0.0f, 500.0f, 1.0f, 1.0f), 
+        juce::NormalisableRange<float>(0.0f, 500.0f, 0.1f, 1.0f), 
         1.0f));
 
     layout.add(std::make_unique<juce::AudioParameterInt>(
@@ -249,7 +249,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout RingModulatorAudioProcessor:
 
     juce::StringArray modulationWaves;
     modulationWaves.add("Sine Wave");
-    modulationWaves.add("Pulse Wave");
+    modulationWaves.add("Square Wave");
+    modulationWaves.add("Triangle Wave");
+    modulationWaves.add("Sawtooth Wave");
 
     layout.add(std::make_unique<juce::AudioParameterChoice>(
         "Modulation Wave",
@@ -258,6 +260,51 @@ juce::AudioProcessorValueTreeState::ParameterLayout RingModulatorAudioProcessor:
         0));
 
     return layout;
+}
+
+double RingModulatorAudioProcessor::GetSineSignal(const float& currentPhase) const
+{
+    return std::sin(currentPhase);
+}
+
+double RingModulatorAudioProcessor::GetSquareSignal(const float& currentPhase) const
+{
+    float modulationSignal = (currentPhase < juce::MathConstants<float>::halfPi) ? 1.0f : -1.0f;
+    return modulationSignal;
+}
+
+double RingModulatorAudioProcessor::GetTriangleSignal(const float& currentPhase) const
+{
+    float modulationSignal = juce::jmap(currentPhase, 0.f, juce::MathConstants<float>::twoPi, -1.0f , 1.0f);
+    return modulationSignal;
+}
+
+double RingModulatorAudioProcessor::GetSawtoothSignal(const float& currentPhase) const
+{
+    float modulationSignal = juce::jmap(currentPhase, 0.f, juce::MathConstants<float>::twoPi, -1.0f, 1.0f);
+    modulationSignal = (modulationSignal > 0.0f) ? -modulationSignal : modulationSignal;
+    return modulationSignal;
+}
+
+double RingModulatorAudioProcessor::GetModulationSignal(const WaveType& type, const float& currentPhase) const
+{
+    switch (type)
+    {
+    case WaveType::SINE:
+        return GetSineSignal(currentPhase);
+        break;
+    case WaveType::SQUARE:
+        return GetSquareSignal(currentPhase);
+        break;
+    case WaveType::TRIANGLE:
+        return GetTriangleSignal(currentPhase);
+        break;
+    case WaveType::SAWTOOTH:
+        return GetSawtoothSignal(currentPhase);
+        break;
+    default:
+        break;
+    }
 }
 
 //==============================================================================
