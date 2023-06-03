@@ -12,6 +12,7 @@
 #include "PluginProcessor.h"
 #include "RotarySlider_RC.h"
 #include "ComboBox_RC.h"
+#include "WaveDisplay.h"
 
 //==============================================================================
 /**
@@ -31,6 +32,9 @@ private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     RingModulatorAudioProcessor& audioProcessor;
+
+    WaveDisplay waveDisplay;
+
     RotarySlider frequencySlider, 
                         depthSlider,
                         mixSlider;

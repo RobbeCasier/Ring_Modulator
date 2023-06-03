@@ -8,6 +8,7 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "WaveModulationUtility.h"
 
 //==============================================================================
 RingModulatorAudioProcessor::RingModulatorAudioProcessor()
@@ -158,7 +159,7 @@ void RingModulatorAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
     for (int i = 0; i < buffer.getNumSamples(); ++i)
     {
         // Calculate the modulation signal
-        double modulationSignal = GetModulationSignal(settings.waveType, phase);
+        double modulationSignal = Wave::GetModulationSignal(settings.waveType, phase);
 
         for (int channel = 0; channel < totalNumOutputChannels; ++channel)
         {
@@ -166,10 +167,10 @@ void RingModulatorAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
             const float* channelData = buffer.getReadPointer(channel);
 
             // Apply ring modulation to the input sample
-            float modulatedSample = channelData[i] * (1.0f - settings.depth * modulationSignal);
+            float modulatedSample = channelData[i] * (settings.depth * modulationSignal);
 
             // Mix original and modulated sample based on the mix parameter
-            outputData[i] = (settings.mix * modulatedSample) + ((1.0f - settings.mix) * channelData[i]);
+            outputData[i] = ((1.0f - settings.mix) * channelData[i]) + (settings.mix * modulatedSample);
         }
 
         // Update the phase for the next sample
@@ -219,7 +220,7 @@ Settings GetSettings(juce::AudioProcessorValueTreeState& apvts)
     settings.frequency = apvts.getRawParameterValue("Frequency")->load();
     settings.depth = apvts.getRawParameterValue("Depth")->load() / 100.f;
     settings.mix = apvts.getRawParameterValue("Mix")->load() / 100.f;
-    settings.waveType = (WaveType)apvts.getRawParameterValue("Modulation Wave")->load();
+    settings.waveType = (Wave::WaveType)apvts.getRawParameterValue("Modulation Wave")->load();
     return settings;
 }
 
@@ -230,7 +231,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout RingModulatorAudioProcessor:
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         "Frequency", 
         "Frequency", 
-        juce::NormalisableRange<float>(0.0f, 500.0f, 0.1f, 1.0f), 
+        juce::NormalisableRange<float>(0.0f, 2000.0f, 0.1f, 1.0f), 
         1.0f));
 
     layout.add(std::make_unique<juce::AudioParameterInt>(
@@ -260,51 +261,6 @@ juce::AudioProcessorValueTreeState::ParameterLayout RingModulatorAudioProcessor:
         0));
 
     return layout;
-}
-
-double RingModulatorAudioProcessor::GetSineSignal(const float& currentPhase) const
-{
-    return std::sin(currentPhase);
-}
-
-double RingModulatorAudioProcessor::GetSquareSignal(const float& currentPhase) const
-{
-    float modulationSignal = (currentPhase < juce::MathConstants<float>::halfPi) ? 1.0f : -1.0f;
-    return modulationSignal;
-}
-
-double RingModulatorAudioProcessor::GetTriangleSignal(const float& currentPhase) const
-{
-    float modulationSignal = juce::jmap(currentPhase, 0.f, juce::MathConstants<float>::twoPi, -1.0f , 1.0f);
-    return modulationSignal;
-}
-
-double RingModulatorAudioProcessor::GetSawtoothSignal(const float& currentPhase) const
-{
-    float modulationSignal = juce::jmap(currentPhase, 0.f, juce::MathConstants<float>::twoPi, -1.0f, 1.0f);
-    modulationSignal = (modulationSignal > 0.0f) ? -modulationSignal : modulationSignal;
-    return modulationSignal;
-}
-
-double RingModulatorAudioProcessor::GetModulationSignal(const WaveType& type, const float& currentPhase) const
-{
-    switch (type)
-    {
-    case WaveType::SINE:
-        return GetSineSignal(currentPhase);
-        break;
-    case WaveType::SQUARE:
-        return GetSquareSignal(currentPhase);
-        break;
-    case WaveType::TRIANGLE:
-        return GetTriangleSignal(currentPhase);
-        break;
-    case WaveType::SAWTOOTH:
-        return GetSawtoothSignal(currentPhase);
-        break;
-    default:
-        break;
-    }
 }
 
 //==============================================================================

@@ -9,18 +9,12 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "WaveModulationUtility.h"
 
-enum class WaveType
-{
-    SINE,
-    SQUARE,
-    TRIANGLE,
-    SAWTOOTH
-};
 struct Settings
 {
     float frequency{ 0 }, depth{ 1 }, mix{ 1 };
-    WaveType waveType{ WaveType::SINE };
+    Wave::WaveType waveType{ Wave::WaveType::SINE };
 };
 
 Settings GetSettings(juce::AudioProcessorValueTreeState& apvts);
@@ -74,13 +68,6 @@ public:
     juce::AudioProcessorValueTreeState apvts{ *this, nullptr, "Parameters", CreateParameterLayout() };
 
 private:
-    //=============================================================================
-    double GetModulationSignal(const WaveType& type, const float& currentPhase) const;
-
-    double GetSineSignal(const float& currentPhase) const;
-    double GetSquareSignal(const float& currentPhase) const;
-    double GetTriangleSignal(const float& currentPhase) const;
-    double GetSawtoothSignal(const float& currentPhase) const;
     //==============================================================================
     double sampleRate{ 0.0 };
     double phase{ 0.0 };

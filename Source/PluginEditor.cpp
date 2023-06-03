@@ -12,6 +12,7 @@
 //==============================================================================
 RingModulatorAudioProcessorEditor::RingModulatorAudioProcessorEditor(RingModulatorAudioProcessor& p)
     : AudioProcessorEditor(&p), audioProcessor(p),
+    waveDisplay(audioProcessor.apvts, "Modulation Wave", 0.9f),
     frequencySlider(*audioProcessor.apvts.getParameter("Frequency"), "Frequency", " HZ"),
     depthSlider(*audioProcessor.apvts.getParameter("Depth"), "Depth", "%"),
     mixSlider(*audioProcessor.apvts.getParameter("Mix"), "Mix", "%"),
@@ -87,16 +88,19 @@ void RingModulatorAudioProcessorEditor::resized()
     waveSelectionArea.setSize(300, 50);
     waveSelectionArea.setCentre(centre);
     waveSelector.setBounds(waveSelectionArea);
+
+    waveDisplay.setBounds(waveArea);
 }
 
 std::vector<juce::Component*> RingModulatorAudioProcessorEditor::GetComponents()
 {
     return
     {
+        &waveDisplay,
         &frequencySlider,
         &depthSlider,
         &mixSlider,
-        &waveSelector
+        &waveSelector,
     };
 }
 

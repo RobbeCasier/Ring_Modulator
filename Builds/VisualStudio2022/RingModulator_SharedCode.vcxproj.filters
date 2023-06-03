@@ -3033,6 +3033,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\WaveModulationUtility.h">
+      <Filter>RingModulator\Source</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\WaveDisplay.h">
       <Filter>RingModulator\Source</Filter>
     </ClInclude>
