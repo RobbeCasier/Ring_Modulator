@@ -41,11 +41,9 @@ RingModulatorAudioProcessorEditor::~RingModulatorAudioProcessorEditor()
 void RingModulatorAudioProcessorEditor::paint (juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
+    g.fillAll (juce::Colour(20u,20u,20u));
 
     g.setColour (juce::Colours::white);
-    g.setFont (15.0f);
-    g.drawFittedText ("Hello World!", getLocalBounds(), juce::Justification::centred, 1);
 }
 
 void RingModulatorAudioProcessorEditor::resized()
