@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="FaF5mO" name="RingModulator" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1">
+              addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
+              companyName="RC_AUDIO" version="1.0.3" pluginFormats="buildStandalone,buildVST3"
+              pluginVST3Category="Fx,Modulation" pluginAAXCategory="32,8192"
+              defines="PPDHasSidechain=true">
   <MAINGROUP id="L2okSv" name="RingModulator">
     <GROUP id="{A420E651-3168-2068-7F00-C8A28FFFF2F4}" name="Source">
       <FILE id="HX6bmJ" name="WaveModulationUtility.h" compile="0" resource="0"

@@ -18,7 +18,8 @@ namespace Wave
         SINE,
         SQUARE,
         TRIANGLE,
-        SAWTOOTH
+        SAWTOOTH,
+        SIDECHAIN
     };
 
 
@@ -48,19 +49,21 @@ namespace Wave
 
     inline double GetModulationSignal(const WaveType& type, const float& currentPhase)
     {
+        float scaledPhase = currentPhase * juce::MathConstants<float>::twoPi;
+
         switch (type)
         {
         case WaveType::SINE:
-            return -1.f*GetSineSignal(currentPhase);
+            return -1.f*GetSineSignal(scaledPhase);
             break;
         case WaveType::SQUARE:
-            return -1.f * GetSquareSignal(currentPhase);
+            return -1.f * GetSquareSignal(scaledPhase);
             break;
         case WaveType::TRIANGLE:
-            return -1.f * GetTriangleSignal(currentPhase);
+            return -1.f * GetTriangleSignal(scaledPhase);
             break;
         case WaveType::SAWTOOTH:
-            return -1.f * GetSawtoothSignal(currentPhase);
+            return -1.f * GetSawtoothSignal(scaledPhase);
             break;
         default:
             break;

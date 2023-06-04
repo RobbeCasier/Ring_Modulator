@@ -11,17 +11,18 @@
 #include "WaveModulationUtility.h"
 
 //==============================================================================
-RingModulatorAudioProcessor::RingModulatorAudioProcessor()
-#ifndef JucePlugin_PreferredChannelConfigurations
-     : AudioProcessor (BusesProperties()
-                     #if ! JucePlugin_IsMidiEffect
-                      #if ! JucePlugin_IsSynth
-                       .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
-                      #endif
-                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
-                     #endif
-                       )
-#endif
+RingModulatorAudioProcessor::RingModulatorAudioProcessor() :
+//#ifndef JucePlugin_PreferredChannelConfigurations
+//     AudioProcessor (BusesProperties()
+//                     #if ! JucePlugin_IsMidiEffect
+//                      #if ! JucePlugin_IsSynth
+//                       .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
+//                      #endif
+//                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
+//                     #endif
+//                       )
+//#endif
+    AudioProcessor(MakeBusesProperties())
 {
 }
 
@@ -110,26 +111,17 @@ void RingModulatorAudioProcessor::releaseResources()
 #ifndef JucePlugin_PreferredChannelConfigurations
 bool RingModulatorAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
-  #if JucePlugin_IsMidiEffect
-    juce::ignoreUnused (layouts);
-    return true;
-  #else
-    // This is the place where you check if the layout is supported.
-    // In this template code we only support mono or stereo.
-    // Some plugin hosts, such as certain GarageBand versions, will only
-    // load plugins that support stereo bus layouts.
-    if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
-     && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
-        return false;
+    const auto mono = juce::AudioChannelSet::mono();
+    const auto stereo = juce::AudioChannelSet::stereo();
 
-    // This checks if the input layout matches the output layout
-   #if ! JucePlugin_IsSynth
-    if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
-        return false;
-   #endif
+    const auto mainIn = layouts.getMainInputChannelSet();
+    const auto mainOut = layouts.getMainOutputChannelSet();
 
+    if (mainIn != mainOut)
+        return false;
+    if (mainOut != stereo && mainOut != mono)
+        return false;
     return true;
-  #endif
 }
 #endif
 
@@ -158,13 +150,24 @@ void RingModulatorAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
     Settings settings = GetSettings(this->apvts);
     for (int i = 0; i < buffer.getNumSamples(); ++i)
     {
+        float modulationSignal = 0;
         // Calculate the modulation signal
-        double modulationSignal = Wave::GetModulationSignal(settings.waveType, phase);
+        if (settings.waveType != Wave::WaveType::SIDECHAIN)
+            modulationSignal = Wave::GetModulationSignal(settings.waveType, phase);
+
 
         for (int channel = 0; channel < totalNumOutputChannels; ++channel)
         {
             auto* outputData = buffer.getWritePointer(channel);
             const float* channelData = buffer.getReadPointer(channel);
+
+            // Side Chain
+            if (settings.waveType == Wave::WaveType::SIDECHAIN && totalNumInputChannels > 2)
+            {
+                const float* sideChainData;
+                sideChainData = buffer.getReadPointer(channel + 2);
+                modulationSignal = sideChainData[i];
+            }
 
             // Apply ring modulation to the input sample
             float modulatedSample = channelData[i] * (settings.depth * modulationSignal);
@@ -176,8 +179,8 @@ void RingModulatorAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
         // Update the phase for the next sample
         double phaseIncrement = settings.frequency / sampleRate;
         phase += phaseIncrement;
-        if (phase >= juce::MathConstants<float>::twoPi)
-            phase -= juce::MathConstants<float>::twoPi;
+        if (phase >= 1.f)
+            phase -= 1.f;
     }
 }
 
@@ -211,6 +214,20 @@ void RingModulatorAudioProcessor::setStateInformation (const void* data, int siz
     {
         apvts.replaceState(tree);
     }
+}
+
+juce::AudioProcessor::BusesProperties RingModulatorAudioProcessor::MakeBusesProperties()
+{
+    BusesProperties bp;
+    bp.addBus(true, "Input", juce::AudioChannelSet::stereo(), true);
+    bp.addBus(false, "Output", juce::AudioChannelSet::stereo(), true);
+#if PPDHasSidechain
+    if (!juce::JUCEApplicationBase::isStandaloneApp())
+    {
+        bp.addBus(true, "Input", juce::AudioChannelSet::stereo(), true);
+    }
+#endif
+    return bp;
 }
 
 Settings GetSettings(juce::AudioProcessorValueTreeState& apvts)
@@ -253,6 +270,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout RingModulatorAudioProcessor:
     modulationWaves.add("Square Wave");
     modulationWaves.add("Triangle Wave");
     modulationWaves.add("Sawtooth Wave");
+    modulationWaves.add("Side Chain");
 
     layout.add(std::make_unique<juce::AudioParameterChoice>(
         "Modulation Wave",

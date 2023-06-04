@@ -42,8 +42,8 @@
 namespace ProjectInfo
 {
     const char* const  projectName    = "RingModulator";
-    const char* const  companyName    = "";
-    const char* const  versionString  = "1.0.0";
-    const int          versionNumber  = 0x10000;
+    const char* const  companyName    = "RC_AUDIO";
+    const char* const  versionString  = "1.0.3";
+    const int          versionNumber  = 0x10003;
 }
 #endif

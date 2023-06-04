@@ -35,7 +35,7 @@ void WaveDisplay::paint(juce::Graphics& graphics)
     const int height = display.getHeight() - 20;
 
     const int numPoints = width;
-    const float phaseIncrement = juce::MathConstants<float>::twoPi * numCycles / numPoints;
+    const float phaseIncrement = numCycles / numPoints;
 
     for (int x = 0; x < numPoints; x++)
     {
